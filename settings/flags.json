@@ -1,0 +1,20 @@
+{
+  "flags": [
+    {
+      "name": "yuyi",
+      "steamid": "STEAM_0:0:671735",
+      "flags": "bcdefghijklmnopqrstu"
+    },
+    {
+      "name": "yuyi",
+      "steamid": "STEAM_2:1:533975038",
+      "flags": "bcdeghijklmnopqrstu"
+    },
+    {
+      "name": "test",
+      "steamid": "STEAM_0:1:654321",
+      "flags": "xy"
+    }
+  ]
+}
+
