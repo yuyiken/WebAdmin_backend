@@ -1,4 +1,4 @@
-const { checkPlayerWhenJoin, updateKicks } = require('../db/dbquery')
+const { AddPlayerIntoDB, findPlayerInDB } = require('../db/mongoquerys')
 class ClientConnect {
     /**
       * Method to handle the ClientConnect event
@@ -8,8 +8,26 @@ class ClientConnect {
       * @returns {Object|null} LogAPI commands for the server or null.
       */
     async checkPlayer(Player) {
+        
       let result = {};
 
+      try {
+        
+        const player = await findPlayerInDB(Player);
+
+        if(!player){
+            await AddPlayerIntoDB(Player);
+            console.log(`Player ${Player.Auth} added successfully`);
+        }
+        else console.log(`Player ${player.steamID} are actually in the db`);
+       
+        return null;  
+
+      } catch (error) {
+        console.log(error);
+        return null;
+      }
+      /*  
       try {
           const dbTest = await checkPlayerWhenJoin(Player.Auth)
           let obj = {}
@@ -27,6 +45,7 @@ class ClientConnect {
           console.log(error);
           return null;
       };
+      */
       return result;
   }
   

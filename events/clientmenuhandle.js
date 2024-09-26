@@ -1,5 +1,5 @@
 require('dotenv').config()
-const { insertBanIntoDB } = require('../db/dbquery')
+const { BanPlayer } = require('../db/mongoquerys')
 //const { showMenu, printChat, consolePrint, serverCommand } = require('../events/events')
 const path = require('path');
 const Flags = require('../settings/flags')
@@ -176,7 +176,7 @@ class ClientMenuHandle {
                     Callback: "ClientMenuHandle",
                     Exit: true,
                     EntityId: admin.EntityId,
-                    Items: this.generateTimeItems(Item.Extra)
+                    Items: await this.generateTimeItems(Item.Extra)
                 };
                 //console.log(result["ShowMenu"].Items);
 
@@ -188,12 +188,12 @@ class ClientMenuHandle {
                 const kickcmd = `kick #${obj.UserId} You have been banned from this server. Check details in console.`
                 const banmsg = `^4* ^1ADMIN ^4${admin.Name}^1: banned ^3${obj.name}^1 for ^3(${obj.ban_reason})-(${Item.Text})^1.`
                 const prevban = `^4* ^1Player ^3${obj.name}^1 was banned previously.`
-
+                
                 try {
-                    const dbTest = await insertBanIntoDB(obj)
+                    const dbTest = await BanPlayer(obj)
                     //console.log(dbTest[0]);
 
-                    if (dbTest[0].affectedRows == 1) {
+                    if (dbTest) {
                         result["ClientPrint"] = {
                             EntityId: obj.EntityId,
                             PrintType: 2,
