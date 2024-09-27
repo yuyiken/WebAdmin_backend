@@ -1,6 +1,6 @@
 const express = require('express');
 const logApiController = require('../controllers/logApiController');
-const logApiMiddleware = require('../middlewares/logapiMiddleware');
+const logApiMiddleware = require('../middlewares/logApiMiddleware');
 
 const router = express.Router();
 

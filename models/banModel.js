@@ -29,32 +29,36 @@ const banSchema = new mongoose.Schema({
     type: String,
   },
   banCreated: {
-    type: Date,
-    default: -1, // Genera el timestamp cuando se crea el documento
+    type: Date, // Solo se crea cuando se usa BanPlayer
   },
   banLength: {
     type: Number, // Duración del ban en minutos
-    default: -1,
+    default: -1,  // -1 significa no baneado
   },
   banKicks: {
     type: Number,
     default: 0,
   },
   banTimes: {
-    type: Number, // 0 = activo, 1 = expirado
+    type: Number, // 0 = activo, >0 indica cuántas veces ha sido baneado
     default: 0,
   },
   banExpires: {
     type: Date,
-    default: 0,
+    default: null, // Null cuando no hay expiración activa
   },
 }, { timestamps: true });
 
-
-// Middleware para calcular ban_expire antes de guardar
+// Middleware para calcular `banExpires` antes de guardar
 banSchema.pre('save', function (next) {
-  if (this.isModified('banLength')) {
-    this.banExpires = new Date(this.banCreated.getTime() + this.ban_length * 60000); // ban_length en minutos
+  if (this.isModified('banLength') && this.banCreated) {
+    if (this.banLength > 0) {
+      // Calcular la fecha de expiración si hay un ban temporal
+      this.banExpires = new Date(this.banCreated.getTime() + this.banLength * 60000);
+    } else if (this.banLength === -1) {
+      // Ban permanente, sin fecha de expiración
+      this.banExpires = null;
+    }
   }
   next();
 });

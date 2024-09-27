@@ -1,5 +1,16 @@
 require('dotenv').config()
-const { BanPlayer } = require('../db/mongoquerys')
+const { 
+    BanPlayer,
+    UnbanPlayer
+
+} = require('../db/mongoquerys');
+
+const {
+    convertTime,
+    teamName,
+} = require('../lang/inGame')
+
+
 //const { showMenu, printChat, consolePrint, serverCommand } = require('../events/events')
 const path = require('path');
 const Flags = require('../settings/flags')
@@ -30,15 +41,6 @@ class ClientMenuHandle {
 
         let obj = {}
 
-        let convertTime = {
-            '5 min': 5,
-            '1 hour': 60,
-            '3 hours': 180,
-            '1 day': 1440,
-            '1 week': 10080,
-            '^y1 month': 43200,
-            '^rPermanent': 0
-        };
         //console.log(Item.Extra);
         //
         if (Item.Extra == "kmenu" ||
@@ -187,11 +189,11 @@ class ClientMenuHandle {
                 const cnslmsg = `${process.env.APP_TAG_PREFIX || "[WebAdmin]"}\nName: ${obj.name}\nSteamID: ${obj.steamid}\nIP: ${obj.ip}\nReason: ${obj.ban_reason}`;
                 const kickcmd = `kick #${obj.UserId} You have been banned from this server. Check details in console.`
                 const banmsg = `^4* ^1ADMIN ^4${admin.Name}^1: banned ^3${obj.name}^1 for ^3(${obj.ban_reason})-(${Item.Text})^1.`
-                const prevban = `^4* ^1Player ^3${obj.name}^1 was banned previously.`
+                const prevban = `^4* ^1Something went wrong when try to ban.`
                 
                 try {
+
                     const dbTest = await BanPlayer(obj)
-                    //console.log(dbTest[0]);
 
                     if (dbTest) {
                         result["ClientPrint"] = {
@@ -205,8 +207,8 @@ class ClientMenuHandle {
                             Message: banmsg
                         };
                     }
-                    else {
-                        result['ServerCommand'] = kickcmd;
+                    else {//Caso en el cual nose puede realizar el baneo
+                        //result['ServerCommand'] = kickcmd;
                         result["PrintChat"] = {
                             EntityId: admin.EntityId,
                             Message: prevban
@@ -214,11 +216,10 @@ class ClientMenuHandle {
                     }
                 } catch (error) {
                     console.log(error);
-                    const msg = `^4* ^1Something wrong with the db.`
-
+                    
                     result["PrintChat"] = {
                         EntityId: admin.EntityId,
-                        Message: msg
+                        Message: prevban
                     };
                 }
                 break;
@@ -478,10 +479,11 @@ class ClientMenuHandle {
             CT: 2,
             SPEC: 3
         };
+
         if (Players[Extra.split(';')[3]].Team != teams.TT) {
             items.push({
                 Info: `TeamC;${Extra.split(';')[0]}`,
-                Text: "Terrorist",
+                Text: teamName.TT,
                 Disabled: false,
                 Extra: `${Extra};${teams.TT}`
             });
@@ -490,7 +492,7 @@ class ClientMenuHandle {
         if (Players[Extra.split(';')[3]].Team != teams.CT) {
             items.push({
                 Info: `TeamC;${Extra.split(';')[0]}`,
-                Text: "Counter-Terrorist",
+                Text: teamName.CT,
                 Disabled: false,
                 Extra: `${Extra};${teams.CT}`
             });
@@ -499,7 +501,7 @@ class ClientMenuHandle {
         if (Players[Extra.split(';')[3]].Team != teams.SPEC) {
             items.push({
                 Info: `TeamC;${Extra.split(';')[0]}`,
-                Text: "Spectator",
+                Text: teamName.SPEC,
                 Disabled: false,
                 Extra: `${Extra};${teams.SPEC}`
             });

@@ -3,7 +3,7 @@ require('dotenv').config()
 let time = [];
 let convertTime = {};
 let banReasons = [];
-let teams = {};
+let teamName = {};
 
 switch (process.env.LANG) {
     case "en":
@@ -23,7 +23,7 @@ switch (process.env.LANG) {
                 '^rPermanent': 0
             };
            
-            teams = {
+            teamName = {
                 TT: "Terrorists",
                 CT: "Counter-Terrorists",
                 SPEC: "Spectators",
@@ -105,6 +105,7 @@ module.exports = {
     banMenuReasons,
     banMenuTime,
     banReasons,
+    teamName
 
 }
 

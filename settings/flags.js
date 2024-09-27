@@ -21,7 +21,7 @@ const FLAG_PERMISSIONS = {
     'q': 'custom_level_E',
     'r': 'custom_level_F',
     's': 'custom_level_G',
-    't': 'custom_level_H',
+    't': 'unban',
     'u': 'menu_access'
   };
   
