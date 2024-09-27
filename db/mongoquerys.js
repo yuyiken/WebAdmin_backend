@@ -1,6 +1,5 @@
 const JSBan = require('../models/banModel');
 
-// 1. Banear jugador
 async function BanPlayer(obj) {
   try {
     const player = await JSBan.findOne({ steamID: obj.steamid });
@@ -31,7 +30,6 @@ async function BanPlayer(obj) {
   }
 }
 
-// 2. Desbanear jugador
 async function UnbanPlayer(steamid) {
   try {
     const player = await JSBan.findOne({ steamID: steamid });
@@ -55,8 +53,7 @@ async function UnbanPlayer(steamid) {
     console.error(`Error unbanning player with steamID ${steamid}: ${error}`);
   }
 }
-  b
-// 3. Añadir jugador
+
 async function AddPlayer(Player) {
   try {
     const existingPlayer = await JSBan.findOne({ steamID: Player.Auth });
@@ -81,7 +78,6 @@ async function AddPlayer(Player) {
   }
 }
 
-// 4. Comprobar si el jugador está baneado
 async function CheckPlayer(steamid) {
   try {
     const player = await JSBan.findOne({ steamID: steamid });
@@ -154,6 +150,22 @@ async function GetBannedPlayers() {
   }
 }
 
+async function GetBannedPlayer(steamid) {
+  try {
+    // Buscar jugadores que están actualmente baneados (banLength != -1)
+    const player = await JSBan.findOne({ steamID: steamid });
+
+    if (!player) {
+      console.log(`Player with steamID ${steamid} not found in the database.`);
+      return; // Jugador no encontrado, no está baneado
+    }
+
+    return player;
+  } catch (error) {
+    console.error(`Error retrieving banned player: ${error}`);
+    return;
+  }
+}
 
 module.exports = {
   BanPlayer,
@@ -161,4 +173,5 @@ module.exports = {
   AddPlayer,
   CheckPlayer,
   GetBannedPlayers,
+  GetBannedPlayer
 };

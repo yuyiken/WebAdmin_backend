@@ -1,13 +1,16 @@
 require('dotenv').config()
 const { 
     BanPlayer,
-    UnbanPlayer
+    UnbanPlayer,
+    GetBannedPlayers,
+    GetBannedPlayer
 
 } = require('../db/mongoquerys');
 
 const {
     convertTime,
     teamName,
+    time,
 } = require('../lang/inGame')
 
 
@@ -222,6 +225,55 @@ class ClientMenuHandle {
                         Message: prevban
                     };
                 }
+                break;
+
+            case "UnbanMenu":
+
+                if (!adminFlags.hasPermission(admin.Auth, 'unban')) {
+
+                    result = adminFlags.PrintNoAccess(admin)
+
+                    return result;
+                }
+                result["ShowMenu"] = {
+                    Title: `^r${process.env.APP_TAG_PREFIX || "[WebAdmin]"}\n^yUnban Menu`,
+                    Callback: "ClientMenuHandle",
+                    Exit: true,
+                    EntityId: admin.EntityId,
+                    Items: await this.generateBanList()
+                };
+
+                break;
+
+            case `unban;`:
+
+                const player = await this.GetBannedPlayer(Item.Extra.split(';')[1])
+
+                result["ShowMenu"] = {
+                    Title: `^r${process.env.APP_TAG_PREFIX || "[WebAdmin]"}\n^yUnban Player ^r${player.steamID}\n^yNick ^r${player.nick}`,
+                    Callback: "ClientMenuHandle",
+                    Exit: true,
+                    EntityId: admin.EntityId,
+                    Items: await this.generateConfirmUnban(player)
+                };
+                //console.log(result["ShowMenu"].Items);
+
+                break;
+            case `unbanConf;`:
+
+                const unbanPlayer = await UnbanPlayer(Item.Extra.split(';')[0]);
+                const unbanMsg = `^4* ^1ADMIN ^4${admin.Name}^1: unbanned ^3${Item.Extra.split(';')[1]}^1 with steamid ^3${Item.Extra.split(';')[0]}^1.`
+                if (!unbanPlayer) {
+                    console.log(`Some error unbaning the player`);
+                }else{
+                    result["PrintChat"] = {
+                        EntityId: 0,
+                        Message: unbanMsg
+                    };
+                }
+
+                //console.log(result["ShowMenu"].Items);
+
                 break;
 
             case "TeamMenu":
@@ -514,7 +566,7 @@ class ClientMenuHandle {
 
     async generateTimeItems(Extra) {
         const items = []
-        let time = ['5 min', '1 hour', '3 hours', '1 day', '1 week', '^y1 month', '^rPermanent'];
+
         for (let i = 1; i <= time.length; i++) {
 
             items.push({
@@ -552,5 +604,57 @@ class ClientMenuHandle {
 
         return items;
     }
+    async generateBanList() {
+        const items = [];
+        const players = await GetBannedPlayers();
+        console.log(players);
+ 
+        for (const playerKey in players) {
+            if (players.hasOwnProperty(playerKey)) {
+
+                const player = players[playerKey];
+
+                // Get neccesarry properties
+                const { steamID, nick } = player;
+
+                // Create Object item and push it into the array
+                items.push({
+                    Info: `unban;`,
+                    Text: `${nick} ${steamID}`,
+                    Disabled: false,
+                    Extra: `unban;${steamID}`
+                });
+
+            }
+        }
+
+        //console.log(items);
+
+        return items;
+
+    }
+
+    async generateConfirmUnban(player) {
+
+        const items = []
+
+        items.push({
+            Info: `unbanConf;`,
+            Text: `Yes`,
+            Disabled: false,
+            Extra: `${player.SteamID};${player.nick}`
+        });
+        items.push({
+            Info: `unbanDen;`,
+            Text: `No`,
+            Disabled: false,
+            Extra: `${player.SteamID};${player.nick}`
+        });
+       
+        //console.log(items);
+
+        return items;
+    }
+
 }
 module.exports = ClientMenuHandle;
