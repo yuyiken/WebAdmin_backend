@@ -44,6 +44,10 @@ class ClientMenuHandle {
 
         let obj = {}
 
+        let Iten = {
+            first: Item.Extra.split(';')[0],
+            second: Item.Extra.split(';')[1]
+        }
         //console.log(Item.Extra);
         //
         if (Item.Extra == "kmenu" ||
@@ -54,6 +58,8 @@ class ClientMenuHandle {
             Item.Extra == "smenu" ||
             Item.Extra == "rmenu" ||
             Item.Info == "Map;" ||
+            Item.Info == "unbanConf;" ||
+            Item.Info == "unban;" ||
             Item.Extra == "lmenu") {
             obj = {}
         } else {
@@ -197,7 +203,7 @@ class ClientMenuHandle {
                 try {
 
                     const dbTest = await BanPlayer(obj)
-
+                    
                     if (dbTest) {
                         result["ClientPrint"] = {
                             EntityId: obj.EntityId,
@@ -247,7 +253,7 @@ class ClientMenuHandle {
 
             case `unban;`:
 
-                const player = await this.GetBannedPlayer(Item.Extra.split(';')[1])
+                const player = await GetBannedPlayer(Item.Extra.split(';')[1])
 
                 result["ShowMenu"] = {
                     Title: `^r${process.env.APP_TAG_PREFIX || "[WebAdmin]"}\n^yUnban Player ^r${player.steamID}\n^yNick ^r${player.nick}`,
@@ -261,8 +267,8 @@ class ClientMenuHandle {
                 break;
             case `unbanConf;`:
 
-                const unbanPlayer = await UnbanPlayer(Item.Extra.split(';')[0]);
-                const unbanMsg = `^4* ^1ADMIN ^4${admin.Name}^1: unbanned ^3${Item.Extra.split(';')[1]}^1 with steamid ^3${Item.Extra.split(';')[0]}^1.`
+                const unbanPlayer = await UnbanPlayer(Iten.first);
+                const unbanMsg = `^4* ^1ADMIN ^4${admin.Name}^1: unbanned ^3${Iten.second}^1 with steamid ^3${Iten.first}^1.`
                 if (!unbanPlayer) {
                     console.log(`Some error unbaning the player`);
                 }else{
@@ -341,7 +347,7 @@ class ClientMenuHandle {
                     };
                     return result;
                 }
-                msg = `^4* ^1ADMIN ^4${admin.Name}^1: transfer ^4${obj.name}^1 to ^3${Item.Text}^1.`
+                const msg2 = `^4* ^1ADMIN ^4${admin.Name}^1: transfer ^4${obj.name}^1 to ^3${Item.Text}^1.`
                 result["ChangeTeam"] = {
                     //Change UserId for EntityId on LogApi event.
                     UserId: obj.EntityId,
@@ -349,7 +355,7 @@ class ClientMenuHandle {
                 };
                 result["PrintChat"] = {
                     EntityId: 0,
-                    Message: msg
+                    Message: msg2
                 };
                 break;
             case "SlayMenu":
@@ -642,13 +648,13 @@ class ClientMenuHandle {
             Info: `unbanConf;`,
             Text: `Yes`,
             Disabled: false,
-            Extra: `${player.SteamID};${player.nick}`
+            Extra: `${player.steamID};${player.nick}`
         });
         items.push({
             Info: `unbanDen;`,
             Text: `No`,
             Disabled: false,
-            Extra: `${player.SteamID};${player.nick}`
+            Extra: `${player.steamID};${player.nick}`
         });
        
         //console.log(items);

@@ -5,28 +5,31 @@ async function BanPlayer(obj) {
     const player = await JSBan.findOne({ steamID: obj.steamid });
 
     if (!player) {
-      console.log(`Player with steamID ${steamid} not found in the database.`);
+      console.log(`Player with steamID ${obj.steamid} not found in the database.`);
       return;
     }
 
     // Actualiza los datos de ban
-    player.banLength = banLength; // 0 = permanente, >0 = en minutos
-    player.banReason = banReason;
-    player.aNick = adminName;
-    player.aSteamID = adminSteamID;
+    player.banLength = obj.ban_length; // 0 = permanente, >0 = en minutos
+    player.banReason = obj.ban_reason;
+    player.ip = obj.ip;
+    player.aNick = obj.adminnick;
+    player.nick = obj.name;
+    player.aSteamID = obj.adminsteamid;
     player.banCreated = Date.now();
     player.banTimes += 1;
 
-    if (banLength > 0) {
-      player.banExpires = new Date(player.banCreated.getTime() + banLength * 60000); // Si el ban es temporal
-    } else if (banLength === 0) {
+    if (obj.ban_length > 0) {
+      player.banExpires = new Date(player.banCreated.getTime() + obj.ban_length * 60000); // Si el ban es temporal
+    } else if (obj.ban_length === 0) {
       player.banExpires = null; // Ban permanente
     }
 
     await player.save();
-    console.log(`${steamid} successfully banned for ${banLength === 0 ? 'permanent' : banLength + ' minutes'}.`);
+    console.log(`${obj.steamid} successfully banned for ${obj.ban_length === 0 ? 'permanent' : obj.ban_length + ' minutes'}.`);
+    return player;
   } catch (error) {
-    console.error(`Error banning player with steamID ${steamid}: ${error}`);
+    console.error(`Error banning player with steamID ${obj.steamid}: ${error}`);
   }
 }
 
@@ -49,6 +52,7 @@ async function UnbanPlayer(steamid) {
 
     await player.save();
     console.log(`${steamid} successfully unbanned.`);
+    return player
   } catch (error) {
     console.error(`Error unbanning player with steamID ${steamid}: ${error}`);
   }
@@ -84,12 +88,12 @@ async function CheckPlayer(steamid) {
 
     if (!player) {
       console.log(`Player with steamID ${steamid} not found in the database.`);
-      return false; // Jugador no encontrado, no está baneado
+      return; // Jugador no encontrado, no está baneado
     }
 
     // Si el jugador no está baneado
     if (player.banLength === -1) {
-      return false; // No está baneado
+      return; // No está baneado
     }
 
     // Si el jugador está baneado temporalmente, revisamos si ha expirado el ban
@@ -104,7 +108,7 @@ async function CheckPlayer(steamid) {
 
       await player.save();
       console.log(`Player ${steamid} had their ban expired and is now unbanned.`);
-      return false; // El ban ha expirado, no está baneado
+      return; // El ban ha expirado, no está baneado
     }
 
     // Si sigue baneado, incrementamos los kicks
@@ -112,10 +116,10 @@ async function CheckPlayer(steamid) {
     await player.save();
 
     console.log(`Player ${steamid} is still banned, kick count increased to ${player.banKicks}.`);
-    return true; // El jugador está baneado
+    return player; // El jugador está baneado
   } catch (error) {
     console.error(`Error checking ban status for player with steamID ${steamid}: ${error}`);
-    return false; // En caso de error, asumimos que no está baneado
+    return; // En caso de error, asumimos que no está baneado
   }
 }
 
