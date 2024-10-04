@@ -13,6 +13,12 @@ The following features are not functional with the default version of @LogApi:
 
 These events are not yet available in the standard @LogApi version. I am working on a **pull request** to have these events added to the API.
 
+### To Do List
+- Update LogApi with added new events.
+- Finish text and comments translations.
+- Clean up code.
+- Do frontend.
+
 ### Demo Video
 
 Check out the demo video below for more details:
