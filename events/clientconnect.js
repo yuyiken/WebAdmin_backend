@@ -1,4 +1,5 @@
-const { AddPlayerIntoDB, findPlayerInDB } = require('../db/mongoquerys')
+const { AddPlayer, CheckPlayer } = require('../db/mongoquerys')
+const {calcularDiferencia} = require('../functions')
 class ClientConnect {
     /**
       * Method to handle the ClientConnect event
@@ -13,40 +14,30 @@ class ClientConnect {
 
       try {
         
-        const player = await findPlayerInDB(Player);
+        const plt = await CheckPlayer(Player.Auth);
 
-        if(!player){
-            await AddPlayerIntoDB(Player);
-            console.log(`Player ${Player.Auth} added successfully`);
+        if(!plt){
+            await AddPlayer(Player);
         }
-        else console.log(`Player ${player.steamID} are actually in the db`);
+        else{
+          console.log(plt);
+          if(plt.banLength==0){
+            const kickcmd = `kick #${Player.UserId} You have been banned for ${plt.banReason} forever by ${plt.aNick}.`
+            result["ServerCommand"] = kickcmd
+          }else if (plt.banLength>0) {
+
+            const kickcmd = `kick #${Player.UserId} You have been banned for ${plt.banReason} by ${plt.aNick}. Ban expire in: ${calcularDiferencia(plt.banExpires)}.`
+            result["ServerCommand"] = kickcmd
+          }else result = null
+        } 
        
-        return null;  
+        return result;  
 
       } catch (error) {
         console.log(error);
         return null;
       }
-      /*  
-      try {
-          const dbTest = await checkPlayerWhenJoin(Player.Auth)
-          let obj = {}
-          if (dbTest != null) {
-              obj = dbTest[0]
-              console.log(obj[0]);
-              const kickcmd = `kick #${Player.UserId} You have been banned for ${obj[0].ban_reason} until ${obj[0].ban_expire} by ${obj[0].anick}.`
-              result["ServerCommand"] = kickcmd
-              await updateKicks(dbTest.id, dbTest.ban_kicks)
-          }
-          else {
-              result = null
-          }
-      } catch (error) {
-          console.log(error);
-          return null;
-      };
-      */
-      return result;
+
   }
   
 }

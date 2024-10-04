@@ -49,4 +49,35 @@ const getSteamID64 = (steamID) => {
         return ((BigInt(accountID) * 2n) + BigInt(universe) + 76561197960265728n).toString();
 }
 
-module.exports = {time, getSteamID64, getSteamProfilePicture}
+function calcularDiferencia(timestamp) {
+  
+    
+    const ahora = Date.now(); // Tiempo actual en milisegundos
+    //const fechaIngresada = timestamp * 1000/1000; // Convertir el timestamp a milisegundos
+    console.log(timestamp);
+    console.log(ahora);
+    //console.log(fechaIngresada);
+    const diferenciaMilisegundos = timestamp-ahora;
+
+    // Calcular las diferencias en diferentes unidades de tiempo
+    const segundos = Math.floor(diferenciaMilisegundos / 1000);
+    const minutos = Math.floor(segundos / 60);
+    const horas = Math.floor(minutos / 60);
+    const dias = Math.floor(horas / 24);
+
+    // Lógica de formato según el tiempo transcurrido
+    if (horas < 1) {
+        // Si la diferencia es menor a una hora
+        return `${minutos} minute(s)`;
+    } else if (dias < 1) {
+        // Si la diferencia es menor a un día
+        const minutosRestantes = minutos % 60;
+        return `${horas} hour(s) and ${minutosRestantes} minute(s)`;
+    } else {
+        // Si la diferencia es mayor a un día
+        const horasRestantes = horas % 24;
+        return `${dias} day(s)  ${horasRestantes} hour(s)`;
+    }
+}
+
+module.exports = {time, getSteamID64, getSteamProfilePicture, calcularDiferencia}
