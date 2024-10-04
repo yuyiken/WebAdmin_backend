@@ -1,6 +1,6 @@
 const express = require('express');
 const cors = require('cors');
-const logApiRoutes = require('./routes/logapiRoutes')
+const logApiRoutes = require('./routes/logApiRoutes')
 const errorMiddleware = require('./middlewares/errorMiddleware');
 
 const app = express();

@@ -65,24 +65,7 @@ switch (process.env.LANG) {
             function banMenuTime(){
                 return `Ban Time`
             }
-            
-            // Main menu title
-            function mainMenuTitle(hostname){
-                return `^r${hostname}\n^y`+`Admin Menu`
-            }
-            // Main menu title
-            function mainMenuTitle(hostname){
-                return `^r${hostname}\n^y` + `Admin Menu`
-            }
-            // Main menu title
-            function mainMenuTitle(hostname){
-                return `^r${hostname}\n^y` + `Admin Menu`
-            }  
-            // Main menu title
-            function mainMenuTitle(hostname){
-                return `^r${hostname}\n^y` + `Admin Menu`
-            }
-            
+                        
         break;
 
     case "es":

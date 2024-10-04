@@ -107,7 +107,7 @@ class ClientSay {
                 Text:  mainMenuUnbanName(),
                 Disabled: !admin.hasPermission(Player.Auth, 'unban'),
                 Extra: "ubmenu"
-            },
+            }/*,
             {
                 Info: "SlayMenu",
                 Text: mainMenuSlayName(),
@@ -125,7 +125,7 @@ class ClientSay {
                 Text: mainMenuMapName(),
                 Disabled: !admin.hasPermission(Player.Auth,'map'),
                 Extra: "mmenu"
-            }/*,
+            }
             {
                 Info: "Rcon Menu",
                 Text: "Rcon",
